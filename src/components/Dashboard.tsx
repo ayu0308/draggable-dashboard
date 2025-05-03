@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React from 'react';
 import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X,LucideIcon , GripVertical } from "lucide-react";
 import { useState, useRef } from "react";
@@ -157,20 +159,20 @@ function Dashboard() {
     const currentScale = cardScales[cardId]?.[dimension] || 1;
 
     return (
-      <div className="flex flex-col items-start gap-2 mb-4 w-full">
+      <div className="flex flex-row items-center justify-between gap-2 mb-4 w-full">
         <p className="text-sm font-medium text-gray-700 mb-1">{dimension === 'width' ? 'Width' : 'Height'}</p>
         <div className="flex border border-gray-300 rounded-full overflow-hidden bg-white">
           {Array.from({length: maxScale}, (_, i) => i + 1).map((scale, idx, arr) => (
             <button
               key={scale}
               onClick={() => handleScaleClick(dimension, scale)}
-              className={`px-4 py-1 text-base focus:outline-none transition-colors
+              className={`cursor-pointer px-2 py-1 text-base focus:outline-none transition-colors
                 ${currentScale === scale ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-800'}
                 ${idx === 0 ? 'rounded-l-full' : ''}
                 ${idx === arr.length - 1 ? 'rounded-r-full' : ''}
                 ${idx !== arr.length - 1 ? 'border-r border-gray-300' : ''}
               `}
-              style={{ minWidth: 40 }}
+              style={{ width: 20 }}
             >
               {scale}
             </button>
@@ -181,20 +183,17 @@ function Dashboard() {
   };
 
   const renderOverlay = (cardId: string, title: string) => (
-    <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-start p-6 rounded-lg shadow-lg z-10 overflow-y-auto">
+    <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-between p-6 rounded-lg shadow-lg z-10 overflow-y-auto">
       <div className="absolute top-4 right-4">
         <button onClick={closeOverlay} className="p-1 hover:bg-gray-100 rounded-full">
           <X className="h-5 w-5 text-gray-600" />
         </button>
       </div>
-      <div className="w-full pr-4 space-y-6">
-        <h3 className="text-lg font-semibold text-gray-800">{title} Settings</h3>
-        <div className="space-y-6">
+      <div className=" space-y-6">
           {renderScaleButtons('width', cardId)}
           {renderScaleButtons('height', cardId)}
         </div>
       </div>
-    </div>
   );
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
@@ -295,13 +294,13 @@ function Dashboard() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-amber-200 p-2 rounded-lg">
             <button
-              className={`p-1 rounded ${!isEditMode ? "bg-gray-300" : ""}`}
+              className={`cursor-pointer p-1 rounded ${!isEditMode ? "bg-gray-300" : ""}`}
               onClick={() => setIsEditMode(false)}
             >
               <Eye className="h-5 w-5" />
             </button>
             <button
-              className={`p-1 rounded ${isEditMode ? "bg-gray-300" : ""}`}
+              className={`cursor-pointer p-1 rounded ${isEditMode ? "bg-gray-300" : ""}`}
               onClick={toggleEditMode}
             >
               <Pencil className="h-5 w-5" />
