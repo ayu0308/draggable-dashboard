@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Home, Users, Settings, BarChart2, Mail, Bell, ChevronLeft } from 'lucide-react';
+import { Home, BarChart2,  ChevronLeft } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {

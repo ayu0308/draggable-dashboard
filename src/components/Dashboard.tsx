@@ -190,6 +190,7 @@ function Dashboard() {
         </button>
       </div>
       <div className=" space-y-6">
+        <h2>{title}</h2>
           {renderScaleButtons('width', cardId)}
           {renderScaleButtons('height', cardId)}
         </div>
