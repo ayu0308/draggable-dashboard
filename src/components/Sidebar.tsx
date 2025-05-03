@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Home, Users, Settings, BarChart2, Mail, Bell, ChevronLeft } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -7,13 +9,10 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
+  const location = useLocation();
   const menuItems = [
-    { icon: Home, label: 'Dashboard' },
-    { icon: BarChart2, label: 'Analytics' },
-    { icon: Users, label: 'Customers' },
-    { icon: Mail, label: 'Messages' },
-    { icon: Bell, label: 'Notifications' },
-    { icon: Settings, label: 'Settings' },
+    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: BarChart2, label: 'Components', path: '/components' },
   ];
 
   return (
@@ -28,16 +27,17 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
       </div>
       <nav>
         {menuItems.map((item) => (
-          <button
+          <Link
             key={item.label}
+            to={item.path}
             className={`flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg w-full transition-colors ${
               isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-            }`}
+            } ${location.pathname === item.path ? 'bg-gray-800 text-white' : ''}`}
             title={!isOpen ? item.label : undefined}
           >
             <item.icon className="h-5 w-5 shrink-0" />
             {isOpen && <span>{item.label}</span>}
-          </button>
+          </Link>
         ))}
       </nav>
       <button
