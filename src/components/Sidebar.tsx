@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Home, BarChart2,  ChevronLeft, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
