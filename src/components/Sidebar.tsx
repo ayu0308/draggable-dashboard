@@ -1,7 +1,7 @@
 
-import { Home, BarChart2,  ChevronLeft, LogOut } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Home, BarChart2,  ChevronLeft } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,21 +10,11 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { logout } = useAuth();
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: BarChart2, label: 'Components', path: '/components' },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to log out:', error);
-    }
-  };
 
   return (
     <div 
