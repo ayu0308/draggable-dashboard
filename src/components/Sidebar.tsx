@@ -1,7 +1,6 @@
-
-import { Home, BarChart2,  ChevronLeft } from 'lucide-react';
+import { Home, BarChart2, ChevronLeft } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-
+import logo from '../assets/dashform_blue_icon.png';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -15,16 +14,25 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     { icon: BarChart2, label: 'Components', path: '/components' },
   ];
 
-
   return (
     <div 
       className={`fixed left-0 h-screen bg-gray-900 text-white p-4 transition-all duration-300 z-30 ${
         isOpen ? 'w-64' : 'w-20'
       }`}
     >
-      <div className={`flex items-center gap-2 mb-8 px-2 ${!isOpen && 'justify-center'}`}>
-        <BarChart2 className="h-8 w-8 text-blue-500 shrink-0" />
-        {isOpen && <span className="text-xl font-bold">Analytics Pro</span>}
+      <div className={`flex items-center gap-3 mb-8 ${!isOpen ? 'justify-center' : 'px-2'}`}>
+        <img 
+          src={logo} 
+          alt="DashForm Logo" 
+          className={`h-10 w-10 object-contain transition-all duration-300 ${
+            isOpen ? 'h-10 w-10' : 'h-8 w-8'
+          }`}
+        />
+        {isOpen && (
+          <span className="text-xl font-bold whitespace-nowrap overflow-hidden">
+            DashForm
+          </span>
+        )}
       </div>
       <nav className="flex flex-col h-[calc(100%-8rem)]">
         <div className="flex-1">
@@ -32,8 +40,8 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             <Link
               key={item.label}
               to={item.path}
-              className={`flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg w-full transition-colors ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
+              className={`flex items-center mb-1 gap-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg w-full transition-colors ${
+                isOpen ? 'px-3 py-2' : 'p-2 justify-center'
               } ${location.pathname === item.path ? 'bg-gray-800 text-white' : ''}`}
               title={!isOpen ? item.label : undefined}
             >
@@ -42,7 +50,6 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             </Link>
           ))}
         </div>
-       
       </nav>
       <button
         onClick={onToggle}

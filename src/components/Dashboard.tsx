@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React from 'react';
 import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X, LucideIcon, GripVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
