@@ -3,7 +3,7 @@
 import React from 'react';
 import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X, LucideIcon, GripVertical } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { saveCardDimensions, getCardDimensions, getAllCardDimensions } from '../utils/localStorage';
+import { saveCardDimensions, getAllCardDimensions } from '../utils/localStorage';
 
 interface StatItem {
   title: string;
