@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Home, BarChart2,  ChevronLeft, LogOut } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Home, BarChart2,  ChevronLeft } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,25 +10,15 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { logout } = useAuth();
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: BarChart2, label: 'Components', path: '/components' },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to log out:', error);
-    }
-  };
 
   return (
     <div 
-      className={`fixed left-0 h-screen bg-gray-900 text-white p-4 transition-all duration-300 ${
+      className={`fixed left-0 h-screen bg-gray-900 text-white p-4 transition-all duration-300 z-30 ${
         isOpen ? 'w-64' : 'w-20'
       }`}
     >
@@ -53,20 +42,11 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             </Link>
           ))}
         </div>
-        <button
-          onClick={handleLogout}
-          className={`flex items-center gap-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg w-full transition-colors ${
-            isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-          }`}
-          title={!isOpen ? 'Logout' : undefined}
-        >
-          <LogOut className="h-5 w-5 shrink-0" />
-          {isOpen && <span>Logout</span>}
-        </button>
+       
       </nav>
       <button
         onClick={onToggle}
-        className={`absolute top-[4%] -right-3 cursor-pointer bg-gray-900 text-white p-1 rounded-full hover:bg-gray-800 transition-transform ${
+        className={`z-10 absolute top-[4%] -right-3 cursor-pointer bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all shadow-md border border-gray-200 dark:border-gray-700 ${
           !isOpen && 'rotate-180'
         }`}
       >

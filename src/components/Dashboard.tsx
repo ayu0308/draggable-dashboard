@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import React from 'react';
-import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X,LucideIcon , GripVertical } from "lucide-react";
-import { useState, useRef } from "react";
+import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X, LucideIcon, GripVertical } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { saveCardDimensions, getAllCardDimensions } from '../utils/localStorage';
 
 interface StatItem {
   title: string;
@@ -80,6 +81,17 @@ function Dashboard() {
   const dragItem = useRef<string | null>(null);
   const dragOverItem = useRef<string | null>(null);
 
+  // Load saved dimensions from localStorage on component mount
+  useEffect(() => {
+    const savedDimensions = getAllCardDimensions();
+    if (Object.keys(savedDimensions).length > 0) {
+      setCardScales(prev => ({
+        ...prev,
+        ...savedDimensions
+      }));
+    }
+  }, []);
+
   const toggleEditMode = () => {
     setIsEditMode((prev) => !prev);
     if (activeCard) {
@@ -98,13 +110,20 @@ function Dashboard() {
   const handleScaleClick = (dimension: 'width' | 'height', value: number) => {
     if (!activeCard) return;
     
-    setCardScales(prev => ({
-      ...prev,
+    const newScales = {
+      ...cardScales,
       [activeCard]: {
-        ...prev[activeCard],
+        ...cardScales[activeCard],
         [dimension]: value
       }
-    }));
+    };
+    
+    setCardScales(newScales);
+    // Save to localStorage
+    saveCardDimensions(activeCard, {
+      width: newScales[activeCard].width || 1,
+      height: newScales[activeCard].height || 1
+    });
   };
 
   const stats: StatItem[] = [
@@ -189,12 +208,12 @@ function Dashboard() {
           <X className="h-5 w-5 text-gray-600" />
         </button>
       </div>
-      <div className=" space-y-6">
+      <div className="space-y-6">
         <h2>{title}</h2>
-          {renderScaleButtons('width', cardId)}
-          {renderScaleButtons('height', cardId)}
-        </div>
+        {renderScaleButtons('width', cardId)}
+        {renderScaleButtons('height', cardId)}
       </div>
+    </div>
   );
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
@@ -260,28 +279,6 @@ function Dashboard() {
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
-
-  // Load saved positions and scales from localStorage on component mount
-  React.useEffect(() => {
-    const savedPositions = localStorage.getItem('dashboardCardPositions');
-    const savedScales = localStorage.getItem('dashboardCardScales');
-    
-    if (savedPositions) {
-      try {
-        setCardPositions(JSON.parse(savedPositions));
-      } catch (e) {
-        console.error('Failed to parse saved positions', e);
-      }
-    }
-    
-    if (savedScales) {
-      try {
-        setCardScales(JSON.parse(savedScales));
-      } catch (e) {
-        console.error('Failed to parse saved scales', e);
-      }
-    }
-  }, []);
 
   // Sort all widgets by their order
   const sortedStats = [...stats].sort((a, b) => 
