@@ -42,7 +42,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 h-16 px-6 flex items-center justify-between border-b dark:border-gray-700 shadow-sm z-10 relative">
+    <header className=" dark:bg-gray-800 h-16 px-6 flex items-center justify-between border-b dark:border-gray-700 shadow-sm z-10 relative">
       <div className="flex items-center flex-1 gap-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
