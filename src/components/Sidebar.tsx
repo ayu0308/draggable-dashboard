@@ -11,7 +11,7 @@ const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
   const location = useLocation();
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
-    { icon: BarChart2, label: 'Components', path: '/components' },
+    { icon: BarChart2, label: 'Forms', path: '/forms' },
   ];
 
   return (

@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Components from './pages/Components';
+import Forms from './pages/Forms';
 import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import PrivateRoute from './components/PrivateRoute';
+import FormBuilder from './pages/FormBuilder';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -36,10 +37,18 @@ function App() {
                         }
                       />
                       <Route
-                        path="/components"
+                        path="/forms"
                         element={
                           <PrivateRoute>
-                            <Components />
+                            <Forms />
+                          </PrivateRoute>
+                        }
+                      />
+                       <Route
+                        path="/forms/form-builder"
+                        element={
+                          <PrivateRoute>
+                            <FormBuilder />
                           </PrivateRoute>
                         }
                       />
