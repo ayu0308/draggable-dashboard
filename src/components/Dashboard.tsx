@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React from 'react';
-import { Users, DollarSign, ShoppingCart, TrendingUp, Eye, Pencil, Plus, Settings, X, LucideIcon, GripVertical } from "lucide-react";
+import { DollarSign, Users, ShoppingCart, TrendingUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { saveCardDimensions, getAllCardDimensions } from '../utils/localStorage';
-
-interface StatItem {
-  title: string;
-  value: string;
-  change: string;
-  isPositive: boolean;
-  icon: LucideIcon;
-  id: string;
-}
+import { DashboardCard } from './dashboard/DashboardCard';
+import { StatCard, StatItem } from './dashboard/StatCard';
+import { ChartCard } from './dashboard/ChartCard';
+import { ActivityCard } from './dashboard/ActivityCard';
+import { CardSettings } from './dashboard/CardSettings';
+import { DashboardHeader } from './dashboard/DashboardHeader';
 
 interface CardScale {
   width?: number;
@@ -25,36 +20,6 @@ interface CardScales {
 
 interface CardPosition {
   [key: string]: { order: number };
-}
-
-function DashboardCard({ title, value, change, isPositive, icon: Icon }: StatItem) {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-sm h-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-2xl font-semibold mt-1">{value}</p>
-          <div className={`flex items-center mt-1 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-            <span>{change}</span>
-          </div>
-        </div>
-        <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-          <Icon className="h-6 w-6 text-blue-500" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Chart() {
-  return (
-    <div>
-      <h3 className="text-lg font-semibold mb-4">Revenue Overview</h3>
-      <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-        <p className="text-gray-400">Chart visualization goes here</p>
-      </div>
-    </div>
-  );
 }
 
 function Dashboard() {
@@ -79,9 +44,7 @@ function Dashboard() {
   });
 
   const dragItem = useRef<string | null>(null);
-  const dragOverItem = useRef<string | null>(null);
 
-  // Load saved dimensions from localStorage on component mount
   useEffect(() => {
     const savedDimensions = getAllCardDimensions();
     if (Object.keys(savedDimensions).length > 0) {
@@ -89,6 +52,12 @@ function Dashboard() {
         ...prev,
         ...savedDimensions
       }));
+    }
+
+    // Load saved card positions from localStorage
+    const savedPositions = localStorage.getItem('dashboardCardPositions');
+    if (savedPositions) {
+      setCardPositions(JSON.parse(savedPositions));
     }
   }, []);
 
@@ -119,7 +88,6 @@ function Dashboard() {
     };
     
     setCardScales(newScales);
-    // Save to localStorage
     saveCardDimensions(activeCard, {
       width: newScales[activeCard].width || 1,
       height: newScales[activeCard].height || 1
@@ -168,53 +136,11 @@ function Dashboard() {
     return {
       gridColumn: `span ${scale.width || 1}`,
       gridRow: `span ${scale.height || 1}`,
-      minHeight: `${(scale.height || 1) * 200}px`,
+      height: `${(scale.height || 1) * 200}px`,
       order: position.order,
+      alignSelf: 'start',
     };
   };
-
-  const renderScaleButtons = (dimension: 'width' | 'height', cardId: string) => {
-    const maxScale = 4;
-    const currentScale = cardScales[cardId]?.[dimension] || 1;
-
-    return (
-      <div className="flex flex-row items-center justify-between gap-2 mb-4 w-full">
-        <p className="text-sm font-medium text-gray-700 mb-1">{dimension === 'width' ? 'Width' : 'Height'}</p>
-        <div className="flex border border-gray-300 rounded-full overflow-hidden bg-white">
-          {Array.from({length: maxScale}, (_, i) => i + 1).map((scale, idx, arr) => (
-            <button
-              key={scale}
-              onClick={() => handleScaleClick(dimension, scale)}
-              className={`cursor-pointer px-2 py-1 text-base focus:outline-none transition-colors
-                ${currentScale === scale ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-800'}
-                ${idx === 0 ? 'rounded-l-full' : ''}
-                ${idx === arr.length - 1 ? 'rounded-r-full' : ''}
-                ${idx !== arr.length - 1 ? 'border-r border-gray-300' : ''}
-              `}
-              style={{ width: 20 }}
-            >
-              {scale}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderOverlay = (cardId: string, title: string) => (
-    <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-between p-6 rounded-lg shadow-lg z-10 overflow-y-auto">
-      <div className="absolute top-4 right-4">
-        <button onClick={closeOverlay} className="p-1 hover:bg-gray-100 rounded-full">
-          <X className="h-5 w-5 text-gray-600" />
-        </button>
-      </div>
-      <div className="space-y-6">
-        <h2>{title}</h2>
-        {renderScaleButtons('width', cardId)}
-        {renderScaleButtons('height', cardId)}
-      </div>
-    </div>
-  );
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
     if (!isEditMode) return;
@@ -222,197 +148,118 @@ function Dashboard() {
     e.currentTarget.classList.add('opacity-50');
   };
 
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-    if (!isEditMode) return;
-    dragOverItem.current = id;
-    e.preventDefault();
-  };
-
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isEditMode) return;
     e.preventDefault();
   };
 
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
-    if (!isEditMode || !dragItem.current || !dragOverItem.current) {
-      e.currentTarget.classList.remove('opacity-50');
-      return;
-    }
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetId: string) => {
+    e.preventDefault();
+    if (!isEditMode || !dragItem.current) return;
 
-    // Reorder the cards
     const newPositions = { ...cardPositions };
     const draggedItemOrder = newPositions[dragItem.current].order;
-    const dragOverItemOrder = newPositions[dragOverItem.current].order;
+    const targetItemOrder = newPositions[targetId].order;
 
-    // Update all affected positions
-    Object.keys(newPositions).forEach(key => {
-      const currentOrder = newPositions[key].order;
-      
-      if (draggedItemOrder < dragOverItemOrder) {
-        // Moving down
-        if (currentOrder > draggedItemOrder && currentOrder <= dragOverItemOrder) {
-          newPositions[key].order -= 1;
-        } else if (key === dragItem.current) {
-          newPositions[key].order = dragOverItemOrder;
-        }
-      } else if (draggedItemOrder > dragOverItemOrder) {
-        // Moving up
-        if (currentOrder < draggedItemOrder && currentOrder >= dragOverItemOrder) {
-          newPositions[key].order += 1;
-        } else if (key === dragItem.current) {
-          newPositions[key].order = dragOverItemOrder;
-        }
-      }
-    });
+    newPositions[dragItem.current].order = targetItemOrder;
+    newPositions[targetId].order = draggedItemOrder;
 
     setCardPositions(newPositions);
-    e.currentTarget.classList.remove('opacity-50');
-    
-    // Save to localStorage
     localStorage.setItem('dashboardCardPositions', JSON.stringify(newPositions));
-    localStorage.setItem('dashboardCardScales', JSON.stringify(cardScales));
     
+    e.currentTarget.classList.remove('opacity-50');
     dragItem.current = null;
-    dragOverItem.current = null;
   };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.classList.remove('opacity-50');
+    dragItem.current = null;
   };
 
-  // Sort all widgets by their order
   const sortedStats = [...stats].sort((a, b) => 
     (cardPositions[a.id]?.order || 0) - (cardPositions[b.id]?.order || 0)
   );
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-amber-200 p-2 rounded-lg">
-            <button
-              className={`cursor-pointer p-1 rounded ${!isEditMode ? "bg-gray-300" : ""}`}
-              onClick={() => setIsEditMode(false)}
-            >
-              <Eye className="h-5 w-5" />
-            </button>
-            <button
-              className={`cursor-pointer p-1 rounded ${isEditMode ? "bg-gray-300" : ""}`}
-              onClick={toggleEditMode}
-            >
-              <Pencil className="h-5 w-5" />
-            </button>
-          </div>
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-            <Plus className="h-5 w-5" /> Widgets
-          </button>
-        </div>
-      </div>
+      <DashboardHeader 
+        isEditMode={isEditMode}
+        onToggleEditMode={toggleEditMode}
+      />
 
       <div className="space-y-6">
-        <div className="grid grid-cols-4 auto-rows-min gap-6">
+        <div className="grid grid-cols-4 auto-rows-min gap-6 items-start">
           {sortedStats.map((stat) => (
-            <div 
-              key={stat.id} 
-              className={`relative h-full ${isEditMode ? 'cursor-move' : ''}`}
-              style={getCardStyle(stat.id)}
-              draggable={isEditMode}
-              onDragStart={(e) => handleDragStart(e, stat.id)}
-              onDragEnter={(e) => handleDragEnter(e, stat.id)}
+            <DashboardCard
+              key={stat.id}
+              id={stat.id}
+              title={stat.title}
+              isEditMode={isEditMode}
+              onSettingsClick={handleSettingsClick}
+              onDragStart={handleDragStart}
               onDragOver={handleDragOver}
+              onDrop={handleDrop}
               onDragEnd={handleDragEnd}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => e.preventDefault()}
+              style={getCardStyle(stat.id)}
             >
-              {isEditMode && (
-                <div className="absolute top-2 right-2 flex space-x-2 z-10">
-                  <button
-                    className="p-1 bg-gray-200 rounded-full"
-                    onClick={() => handleSettingsClick(stat.id)}
-                  >
-                    <Settings className="h-4 w-4" />
-                  </button>
-                  <div className="p-1 bg-gray-200 rounded-full">
-                    <GripVertical className="h-4 w-4 cursor-grab" />
-                  </div>
-                </div>
+              <StatCard {...stat} />
+              {activeCard === stat.id && (
+                <CardSettings
+                  cardId={stat.id}
+                  title={stat.title}
+                  onClose={closeOverlay}
+                  onScaleClick={handleScaleClick}
+                  currentScales={cardScales[stat.id] || {}}
+                />
               )}
-              <DashboardCard {...stat} />
-              {activeCard === stat.id && renderOverlay(stat.id, stat.title)}
-            </div>
+            </DashboardCard>
           ))}
-        </div>
 
-        <div className="grid grid-cols-4 auto-rows-min gap-6">
-          <div 
-            className={`relative bg-white p-6 rounded-xl shadow-sm h-full ${isEditMode ? 'cursor-move' : ''}`}
+          <DashboardCard
+            id="chart-1"
+            title="Revenue Overview"
+            isEditMode={isEditMode}
+            onSettingsClick={handleSettingsClick}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragEnd={handleDragEnd}
             style={getCardStyle("chart-1")}
-            draggable={isEditMode}
-            onDragStart={(e) => handleDragStart(e, "chart-1")}
-            onDragEnter={(e) => handleDragEnter(e, "chart-1")}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => e.preventDefault()}
           >
-            {isEditMode && (
-              <div className="absolute top-2 right-2 flex space-x-2 z-10">
-                <button
-                  className="p-1 bg-gray-200 rounded-full"
-                  onClick={() => handleSettingsClick("chart-1")}
-                >
-                  <Settings className="h-4 w-4" />
-                </button>
-                <div className="p-1 bg-gray-200 rounded-full">
-                  <GripVertical className="h-4 w-4 cursor-grab" />
-                </div>
-              </div>
+            <ChartCard />
+            {activeCard === "chart-1" && (
+              <CardSettings
+                cardId="chart-1"
+                title="Revenue Overview"
+                onClose={closeOverlay}
+                onScaleClick={handleScaleClick}
+                currentScales={cardScales["chart-1"] || {}}
+              />
             )}
-            <Chart />
-            {activeCard === "chart-1" && renderOverlay("chart-1", "Revenue Overview")}
-          </div>
+          </DashboardCard>
 
-          <div 
-            className={`relative bg-white p-6 rounded-xl shadow-sm h-full ${isEditMode ? 'cursor-move' : ''}`}
-            style={getCardStyle("activity-1")}
-            draggable={isEditMode}
-            onDragStart={(e) => handleDragStart(e, "activity-1")}
-            onDragEnter={(e) => handleDragEnter(e, "activity-1")}
+          <DashboardCard
+            id="activity-1"
+            title="Recent Activity"
+            isEditMode={isEditMode}
+            onSettingsClick={handleSettingsClick}
+            onDragStart={handleDragStart}
             onDragOver={handleDragOver}
+            onDrop={handleDrop}
             onDragEnd={handleDragEnd}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => e.preventDefault()}
+            style={getCardStyle("activity-1")}
           >
-            {isEditMode && (
-              <div className="absolute top-2 right-2 flex space-x-2 z-10">
-                <button
-                  className="p-1 bg-gray-200 rounded-full"
-                  onClick={() => handleSettingsClick("activity-1")}
-                >
-                  <Settings className="h-4 w-4" />
-                </button>
-                <div className="p-1 bg-gray-200 rounded-full">
-                  <GripVertical className="h-4 w-4 cursor-grab" />
-                </div>
-              </div>
+            <ActivityCard />
+            {activeCard === "activity-1" && (
+              <CardSettings
+                cardId="activity-1"
+                title="Recent Activity"
+                onClose={closeOverlay}
+                onScaleClick={handleScaleClick}
+                currentScales={cardScales["activity-1"] || {}}
+              />
             )}
-            <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">New user registered</p>
-                    <p className="text-xs text-gray-500">{i} hour ago</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {activeCard === "activity-1" && renderOverlay("activity-1", "Recent Activity")}
-          </div>
+          </DashboardCard>
         </div>
       </div>
     </div>
