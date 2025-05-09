@@ -12,7 +12,7 @@ const Sidebar = ({ isOpen, onToggle, isMobile }: SidebarProps) => {
   const location = useLocation();
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
-    { icon: BarChart2, label: 'Forms', path: '/forms' },
+    // { icon: BarChart2, label: 'Forms', path: '/forms' },
   ];
 
   return (
