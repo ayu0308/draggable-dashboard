@@ -3,7 +3,6 @@ import { Users } from "lucide-react";
 export const ActivityCard: React.FC = () => {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
       <div className="space-y-4">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center gap-4">

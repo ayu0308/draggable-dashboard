@@ -13,7 +13,7 @@ export const StatCard: React.FC<StatItem> = ({ title, value, change, isPositive,
   return (
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm text-gray-500">{title}</p>
+     
         <p className="text-2xl font-semibold mt-1">{value}</p>
         <div className={`flex items-center mt-1 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
           <span>{change}</span>
