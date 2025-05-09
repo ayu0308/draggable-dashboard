@@ -219,7 +219,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className=" mx-auto p-6  min-h-screen">
       <DashboardHeader 
         isEditMode={isEditMode}
         onToggleEditMode={toggleEditMode}
