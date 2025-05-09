@@ -25,13 +25,18 @@ interface CardPosition {
 function Dashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [activeCard, setActiveCard] = useState<string | null>(null);
+  const [removedWidgets, setRemovedWidgets] = useState<string[]>(() => {
+    // Load removed widgets from localStorage on initial render
+    const savedRemovedWidgets = localStorage.getItem('dashboardRemovedWidgets');
+    return savedRemovedWidgets ? JSON.parse(savedRemovedWidgets) : [];
+  });
   const [cardScales, setCardScales] = useState<CardScales>({
     "stat-1": { width: 1, height: 1 },
     "stat-2": { width: 1, height: 1 },
     "stat-3": { width: 1, height: 1 },
     "stat-4": { width: 1, height: 1 },
-    "chart-1": { width: 2, height: 1 },
-    "activity-1": { width: 2, height: 1 }
+    "chart-1": { width: 2, height: 2 },
+    "activity-1": { width: 2, height: 2 }
   });
   
   const [cardPositions, setCardPositions] = useState<CardPosition>({
@@ -176,15 +181,51 @@ function Dashboard() {
     dragItem.current = null;
   };
 
-  const sortedStats = [...stats].sort((a, b) => 
-    (cardPositions[a.id]?.order || 0) - (cardPositions[b.id]?.order || 0)
-  );
+  const sortedStats = [...stats]
+    .filter(stat => !removedWidgets.includes(stat.id))
+    .sort((a, b) => (cardPositions[a.id]?.order || 0) - (cardPositions[b.id]?.order || 0));
+
+  const handleWidgetDrop = (widgetId: string) => {
+    setRemovedWidgets(prev => {
+      const newRemovedWidgets = [...prev, widgetId];
+      // Save to localStorage whenever removed widgets change
+      localStorage.setItem('dashboardRemovedWidgets', JSON.stringify(newRemovedWidgets));
+      return newRemovedWidgets;
+    });
+    const newPositions = { ...cardPositions };
+    const newScales = { ...cardScales };
+    delete newPositions[widgetId];
+    delete newScales[widgetId];
+    setCardPositions(newPositions);
+    setCardScales(newScales);
+    localStorage.setItem('dashboardCardPositions', JSON.stringify(newPositions));
+  };
+
+  const handleWidgetRestore = (widgetId: string) => {
+    setRemovedWidgets(prev => {
+      const newRemovedWidgets = prev.filter(id => id !== widgetId);
+      // Save to localStorage whenever removed widgets change
+      localStorage.setItem('dashboardRemovedWidgets', JSON.stringify(newRemovedWidgets));
+      return newRemovedWidgets;
+    });
+    const newPositions = { ...cardPositions };
+    const newScales = { ...cardScales };
+    const maxOrder = Math.max(...Object.values(cardPositions).map(pos => pos.order));
+    newPositions[widgetId] = { order: maxOrder + 1 };
+    newScales[widgetId] = { width: 1, height: 1 };
+    setCardPositions(newPositions);
+    setCardScales(newScales);
+    localStorage.setItem('dashboardCardPositions', JSON.stringify(newPositions));
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
       <DashboardHeader 
         isEditMode={isEditMode}
         onToggleEditMode={toggleEditMode}
+        onWidgetDrop={handleWidgetDrop}
+        removedWidgets={removedWidgets}
+        onWidgetRestore={handleWidgetRestore}
       />
 
       <div className="space-y-6">
@@ -215,51 +256,55 @@ function Dashboard() {
             </DashboardCard>
           ))}
 
-          <DashboardCard
-            id="chart-1"
-            title="Revenue Overview"
-            isEditMode={isEditMode}
-            onSettingsClick={handleSettingsClick}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-            style={getCardStyle("chart-1")}
-          >
-            <ChartCard />
-            {activeCard === "chart-1" && (
-              <CardSettings
-                cardId="chart-1"
-                title="Revenue Overview"
-                onClose={closeOverlay}
-                onScaleClick={handleScaleClick}
-                currentScales={cardScales["chart-1"] || {}}
-              />
-            )}
-          </DashboardCard>
+          {!removedWidgets.includes("chart-1") && (
+            <DashboardCard
+              id="chart-1"
+              title="Revenue Overview"
+              isEditMode={isEditMode}
+              onSettingsClick={handleSettingsClick}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragEnd={handleDragEnd}
+              style={getCardStyle("chart-1")}
+            >
+              <ChartCard />
+              {activeCard === "chart-1" && (
+                <CardSettings
+                  cardId="chart-1"
+                  title="Revenue Overview"
+                  onClose={closeOverlay}
+                  onScaleClick={handleScaleClick}
+                  currentScales={cardScales["chart-1"] || {}}
+                />
+              )}
+            </DashboardCard>
+          )}
 
-          <DashboardCard
-            id="activity-1"
-            title="Recent Activity"
-            isEditMode={isEditMode}
-            onSettingsClick={handleSettingsClick}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onDragEnd={handleDragEnd}
-            style={getCardStyle("activity-1")}
-          >
-            <ActivityCard />
-            {activeCard === "activity-1" && (
-              <CardSettings
-                cardId="activity-1"
-                title="Recent Activity"
-                onClose={closeOverlay}
-                onScaleClick={handleScaleClick}
-                currentScales={cardScales["activity-1"] || {}}
-              />
-            )}
-          </DashboardCard>
+          {!removedWidgets.includes("activity-1") && (
+            <DashboardCard
+              id="activity-1"
+              title="Recent Activity"
+              isEditMode={isEditMode}
+              onSettingsClick={handleSettingsClick}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onDragEnd={handleDragEnd}
+              style={getCardStyle("activity-1")}
+            >
+              <ActivityCard />
+              {activeCard === "activity-1" && (
+                <CardSettings
+                  cardId="activity-1"
+                  title="Recent Activity"
+                  onClose={closeOverlay}
+                  onScaleClick={handleScaleClick}
+                  currentScales={cardScales["activity-1"] || {}}
+                />
+              )}
+            </DashboardCard>
+          )}
         </div>
       </div>
     </div>
