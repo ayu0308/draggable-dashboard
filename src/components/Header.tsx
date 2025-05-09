@@ -1,9 +1,13 @@
-import { Search, User, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Search, User, LogOut, ChevronDown, Sun, Moon, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const Header = () => {
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+const Header = ({ onMenuClick }: HeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage first
@@ -42,9 +46,15 @@ const Header = () => {
   };
 
   return (
-    <header className=" dark:bg-gray-800 h-16 px-6 flex items-center justify-between border-b dark:border-gray-700 shadow-sm z-10 relative">
-      <div className="flex items-center flex-1 gap-4">
-        <div className="relative">
+    <header className="dark:bg-gray-800 h-16 px-4 md:px-6 flex items-center justify-between border-b dark:border-gray-700 shadow-sm z-10 relative">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onMenuClick}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors md:hidden"
+        >
+          <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        </button>
+        <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
           <input
             type="text"
@@ -53,7 +63,7 @@ const Header = () => {
           />
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         <button
           onClick={toggleTheme}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -68,9 +78,9 @@ const Header = () => {
         <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+            className="flex items-center gap-2 md:gap-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
-            <span className="text-sm font-medium dark:text-white">
+            <span className="text-sm font-medium dark:text-white hidden md:inline-block">
               {currentUser?.displayName || currentUser?.email?.split('@')[0] || 'User'}
             </span>
             <div className="flex items-center gap-1">

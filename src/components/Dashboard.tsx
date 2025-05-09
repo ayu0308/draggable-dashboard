@@ -219,7 +219,7 @@ function Dashboard() {
   };
 
   return (
-    <div className=" mx-auto p-6  min-h-screen">
+    <div className="mx-auto p-4 md:p-6 min-h-screen">
       <DashboardHeader 
         isEditMode={isEditMode}
         onToggleEditMode={toggleEditMode}
@@ -229,7 +229,7 @@ function Dashboard() {
       />
 
       <div className="space-y-6">
-        <div className="grid grid-cols-4 auto-rows-min gap-6 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-min gap-4 md:gap-6 items-start">
           {sortedStats.map((stat) => (
             <DashboardCard
               key={stat.id}
@@ -250,7 +250,7 @@ function Dashboard() {
                   title={stat.title}
                   onClose={closeOverlay}
                   onScaleClick={handleScaleClick}
-                  currentScales={cardScales[stat.id] || {}}
+                  currentScales={cardScales[stat.id]}
                 />
               )}
             </DashboardCard>
