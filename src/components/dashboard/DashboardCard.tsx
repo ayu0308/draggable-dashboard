@@ -55,11 +55,11 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           </div>
         </div>
       )}
-      <Card className="h-full bg-white/95 backdrop-blur-sm border border-gray-100 hover:border-gray-200 transition-all duration-300">
+      <Card className="h-full bg-white/95 backdrop-blur-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 overflow-hidden">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-semibold text-gray-800">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-gray-800 truncate">{title}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto max-h-[calc(100%-3rem)]">
           {children}
         </CardContent>
       </Card>
