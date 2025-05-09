@@ -32,7 +32,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
       className={`relative h-full ${isEditMode ? 'cursor-move' : ''}`}
       style={style}
       draggable={isEditMode}
-      onDragStart={(e) => onDragStart(e, id)}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', id);
+        onDragStart(e, id);
+      }}
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, id)}
       onDragEnd={onDragEnd}
