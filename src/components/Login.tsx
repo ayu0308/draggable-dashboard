@@ -116,7 +116,7 @@ export default function Login() {
       {/* </div> */}
        {/* Credentials Card */}
        <div className="bg-white p-4  ml-1 shadow-md rounded-lg">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Test Login Accounts</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Test Login Account</h3>
           <ul className="text-gray-700 text-sm space-y-2">
             <li><strong>Email:</strong> a4ayushkumar3@gmail.com</li>
             <li><strong>Password:</strong> 123456</li>
